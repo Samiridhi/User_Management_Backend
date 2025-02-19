@@ -11,6 +11,7 @@ public class ExternalApiConfig {
 
     // Getters and setters
     public String getDataUrl() {
+        System.out.println("data url: "+ dataUrl);
         return dataUrl;
     }
 

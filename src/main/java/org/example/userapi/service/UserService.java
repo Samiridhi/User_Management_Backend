@@ -15,6 +15,8 @@ import java.util.*;
 
 import org.slf4j.Logger;
 
+import javax.annotation.PostConstruct;
+
 @Service("userService")
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -27,14 +29,18 @@ public class UserService {
         this.externalApiConfig = externalApiConfig;
         this.userRepository = userRepository;
     }
+    @PostConstruct
+    public void init() {
+        loadUsersFromExternalApi();
+    }
 
     public void loadUsersFromExternalApi() {
         try {
             RestTemplate restTemplate = new RestTemplate();
             String externalApiUrl = externalApiConfig.getDataUrl();
-            System.out.println(externalApiUrl);
+            System.out.println("externalApiUrl:"+externalApiUrl);
             // Fetch and directly convert JSON response to UserResponse class
-            UserResponse userResponse = restTemplate.getForObject(externalApiUrl, UserResponse.class);
+            UserResponse userResponse = restTemplate.getForObject("https://dummyjson.com/users", UserResponse.class);
 
             if (userResponse != null) {
                 List<User> users = userResponse.getUsers();

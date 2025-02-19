@@ -26,6 +26,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // used a constructor based dependency injection to inject service
     public UserController(UserService userService) {
         this.userService = userService;
     }
