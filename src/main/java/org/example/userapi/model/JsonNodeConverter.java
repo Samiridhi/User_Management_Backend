@@ -3,8 +3,8 @@ package org.example.userapi.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.*;
+
 
 @Converter(autoApply = true)
 public class JsonNodeConverter implements AttributeConverter<JsonNode, String> {

@@ -1,9 +1,8 @@
 package org.example.userapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 
 @Embeddable
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

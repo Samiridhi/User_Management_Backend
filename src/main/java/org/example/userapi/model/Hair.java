@@ -1,6 +1,6 @@
 package org.example.userapi.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Hair {

@@ -15,7 +15,7 @@ import java.util.*;
 
 import org.slf4j.Logger;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Service("userService")
 public class UserService {

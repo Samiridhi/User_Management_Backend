@@ -13,10 +13,7 @@ import org.example.userapi.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import java.util.Optional;
+import jakarta.validation.constraints.*;
 
 @RestController
 @RequestMapping("/api/users")

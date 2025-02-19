@@ -7,7 +7,7 @@ This is the backend service for the User Management Application built using **Sp
 ## 🛠 Setup Instructions
 
 ### 📋 Prerequisites
-- **Java 11**
+- **Java 21**
 - **Maven** for dependency management
 - **H2 Database** (in-memory storage)
 - Internet connection to fetch external API data
