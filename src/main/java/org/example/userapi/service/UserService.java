@@ -32,7 +32,7 @@ public class UserService {
         loadUsersFromExternalApi();
     }
 
-    public void loadUsersFromExternalApi() {
+    public boolean loadUsersFromExternalApi() {
         try {
             RestTemplate restTemplate = new RestTemplate();
             ExternalApiConfig config = new ExternalApiConfig();
@@ -55,13 +55,16 @@ public class UserService {
                     }
                 }
                 userRepository.saveAll(users);
-                System.out.println("Data successfully imported from API.");
+                System.out.println("Data successfully imported from API.!!!");
+                return true;
             } else {
                 System.out.println("No users returned from the API.");
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error occurred while importing users.");
+            return false;
         }
     }
 

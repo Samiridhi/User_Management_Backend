@@ -1,6 +1,8 @@
 package org.example.userapi.controller;
 
 import java.util.List;
+import java.util.Optional;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,13 +13,14 @@ import org.example.userapi.model.User;
 import org.example.userapi.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.constraints.*;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "User API", description = "Endpoints for user operations")
+@Validated
 public class UserController {
 
     private final UserService userService;
@@ -37,13 +40,18 @@ public class UserController {
                     content = @Content)
     })
     @GetMapping
-    public ResponseEntity<List<User>> searchUsers(@RequestParam @NotBlank(message = "Keyword cannot be blank") String keyword) {
+    public ResponseEntity<List<User>> searchUsers(@RequestParam String keyword) {
+//        return ResponseEntity.ok(null);
         try {
+            if(keyword.isEmpty()){
+                return ResponseEntity.ok(null);
+            }
             List<User> users = userService.searchUsers(keyword);
             if (users.isEmpty()) {
                 return ResponseEntity.ok(null);
+            } else {
+                return ResponseEntity.ok(users);
             }
-            return ResponseEntity.ok(users);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -58,11 +66,19 @@ public class UserController {
                     content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable @Positive(message = "ID must be positive") Long id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+//        @Positive(message = "ID must be positive")
         try {
-            return userService.getUserById(id)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.ok(new User()));
+            if(id < 0){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
+            }
+            Optional<User> user = userService.getUserById(id);
+
+            if(user.isEmpty()){
+                return ResponseEntity.ok(Optional.of(new User()));
+            } else {
+                return ResponseEntity.ok(user);
+            }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -76,13 +92,22 @@ public class UserController {
                     content = @Content)
     })
     @GetMapping("/email")
-    public ResponseEntity<?> getUserByEmail(@RequestParam @NotBlank(message = "Email cannot be blank") @Email(message = "Invalid email format") String email) {
+    public ResponseEntity<?> getUserByEmail(@RequestParam  String email) {
+//        @NotBlank(message = "Email cannot be blank") @Email(message = "Invalid email format")
         try {
-            return userService.getUserByEmail(email)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.ok(new User()));
+            if(email.isEmpty() || !email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
+            }
+            System.out.println("email received: "+email);
+            Optional<User> user = userService.getUserByEmail(email);
+
+            if(user.isEmpty()){
+                return ResponseEntity.ok(new User());
+            } else {
+                return ResponseEntity.ok(user);
+            }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Internal server error");
         }
     }
 
@@ -93,13 +118,19 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Failed to load users",
                     content = @Content)
     })
-    @PostMapping("/load")
-    public void loadUsers() {
+    @GetMapping ("/load")
+    public ResponseEntity<String> loadUsers() {
         try {
-            userService.loadUsersFromExternalApi();
-            ResponseEntity.ok("Users loaded successfully.");
+            System.out.println("loading users from external api.....");
+            if(userService.loadUsersFromExternalApi()){
+                return ResponseEntity.ok("Users loaded successfully...!!!");
+            }
+            else {
+                return ResponseEntity.ok("No users returned from the source.");
+            }
+
         } catch (Exception e) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to load users: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to load users: " + e.getMessage());
         }
     }
 }
