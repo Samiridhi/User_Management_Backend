@@ -8,8 +8,6 @@ import jakarta.persistence.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Address {
 
-//    @Id
-//    private Long id;
 
     private String address;
     private String city;
@@ -20,15 +18,6 @@ public class Address {
 
     @Embedded
     private Coordinates coordinates;
-
-    // Getters and Setters
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public String getAddress() {
         return address;

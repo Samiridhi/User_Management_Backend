@@ -21,8 +21,6 @@ import jakarta.annotation.PostConstruct;
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final ExternalApiConfig externalApiConfig;
-
-
     private final UserRepository userRepository;
 
     public UserService (ExternalApiConfig externalApiConfig, UserRepository userRepository) {
@@ -37,15 +35,14 @@ public class UserService {
     public void loadUsersFromExternalApi() {
         try {
             RestTemplate restTemplate = new RestTemplate();
+            ExternalApiConfig config = new ExternalApiConfig();
             String externalApiUrl = externalApiConfig.getDataUrl();
-            System.out.println("externalApiUrl:"+externalApiUrl);
-            // Fetch and directly convert JSON response to UserResponse class
-            UserResponse userResponse = restTemplate.getForObject("https://dummyjson.com/users", UserResponse.class);
+
+            UserResponse userResponse = restTemplate.getForObject(externalApiUrl, UserResponse.class);
 
             if (userResponse != null) {
                 List<User> users = userResponse.getUsers();
 
-                // Ensure proper mapping for nested objects
                 for (User user : users) {
                     if (user.getCompany() == null) {
                         user.setCompany(new Company());
@@ -57,7 +54,6 @@ public class UserService {
                         throw new IllegalArgumentException("User ID is mandatory and missing for: " + user.getFirstName());
                     }
                 }
-
                 userRepository.saveAll(users);
                 System.out.println("Data successfully imported from API.");
             } else {
@@ -89,13 +85,20 @@ public class UserService {
     public List<User> searchUsers(String keyword) {
         String lowerKeyword = keyword.toLowerCase();
         logger.info("Searching users with keyword: {}", lowerKeyword);
-        return userRepository.findAll((root, query, criteriaBuilder) ->
-                criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), "%" + lowerKeyword + "%"),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), "%" + lowerKeyword + "%"),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("ssn")), "%" + lowerKeyword + "%")
-                )
-        );
+        return userRepository.findAll((root, query, criteriaBuilder) -> {
+            if (lowerKeyword.trim().isEmpty()) {
+                return criteriaBuilder.conjunction(); // Returns all records when keyword is empty
+            }
+
+            String likePattern = "%" + lowerKeyword.toLowerCase() + "%";
+
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), likePattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), likePattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("ssn")), likePattern)
+            );
+        });
+
     }
 
     public Optional<User> getUserById(Long id) {

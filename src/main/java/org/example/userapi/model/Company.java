@@ -8,16 +8,10 @@ import jakarta.persistence.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Company {
 
-//    @Id
-////    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-
     private String department;
     private String name;
     private String title;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "address_id", referencedColumnName = "id")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "address", column = @Column(name = "company_address")),
@@ -31,14 +25,6 @@ public class Company {
     })
     private Address address;
 
-    // Getters and Setters
-//    public Long getId() {
-//        return id;
-//    }
-//
-//    public void setId(Long id) {
-//        this.id = id;
-//    }
 
     public String getDepartment() {
         return department;

@@ -1,6 +1,5 @@
 package org.example.userapi.controller;
 
-import java.util.Collections;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,7 +58,7 @@ public class UserController {
                     content = @Content)
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable @Positive(message = "ID must be positive") Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable @Positive(message = "ID must be positive") Long id) {
         try {
             return userService.getUserById(id)
                     .map(ResponseEntity::ok)
@@ -95,12 +94,12 @@ public class UserController {
                     content = @Content)
     })
     @PostMapping("/load")
-    public ResponseEntity<String> loadUsers() {
+    public void loadUsers() {
         try {
             userService.loadUsersFromExternalApi();
-            return ResponseEntity.ok("Users loaded successfully.");
+            ResponseEntity.ok("Users loaded successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to load users: " + e.getMessage());
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to load users: " + e.getMessage());
         }
     }
 }

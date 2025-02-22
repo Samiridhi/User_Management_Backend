@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 public class User {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
@@ -42,8 +41,6 @@ public class User {
     @Embedded
     private Crypto crypto;
 
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "address_id", referencedColumnName = "id")
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "address", column = @Column(name = "user_address")),
@@ -94,7 +91,8 @@ public class User {
     public void setPassword(String password) { this.password = password; }
 
     public String getBirthDate() { return birthDate; }
-    public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate; }
 
     public String getImage() { return image; }
     public void setImage(String image) { this.image = image; }

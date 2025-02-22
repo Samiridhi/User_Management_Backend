@@ -1,6 +1,5 @@
 package org.example;
 
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -16,23 +15,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackages = "org.example.userapi.model")
 public class Demo {
 
-//    private final UserService userService;
-//
-//    public Demo(UserService userService) {
-//        this.userService = userService;
-//    }
-
     public static void main(String[] args) {
         new SpringApplicationBuilder(Demo.class)
-                .web(WebApplicationType.SERVLET) // Force web mode
                 .run(args);
     }
 
-
-
-//    @Override
-//    public void run(String... args) {
-//        // Call the load function when the application starts
-//        userService.loadUsersFromExternalApi();
-//    }
 }
